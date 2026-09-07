@@ -154,6 +154,16 @@
   }
 }
 
+/* Móvil: respetar áreas seguras (notch y barra de inicio) y dejar el tablón en scroll natural */
+@media (max-width: 1023px) {
+  .wood-desk-frame {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+}
+
 /* Scrollbar personalizado para modales */
 ::-webkit-scrollbar {
   width: 8px;

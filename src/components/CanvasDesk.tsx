@@ -55,12 +55,20 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
     const rejilla = rejillaRef.current;
     if (!contenedor || !rejilla) return;
 
+    const mediaEscritorio = window.matchMedia('(min-width: 1024px)');
+
     const ajustar = () => {
       const anchoDisponible = contenedor.clientWidth;
       const altoDisponible = contenedor.clientHeight;
       const anchoNatural = rejilla.offsetWidth;
       const altoNatural = rejilla.offsetHeight;
       if (!anchoDisponible || !altoDisponible || !anchoNatural || !altoNatural) return;
+
+      if (!mediaEscritorio.matches) {
+        rejilla.style.transform = 'none';
+        setTableroListo(true);
+        return;
+      }
 
       const escala = Math.min(1, anchoDisponible / anchoNatural, altoDisponible / altoNatural);
       const desplazamientoY = Math.max(0, (altoDisponible - altoNatural * escala) / 2);
@@ -72,16 +80,18 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
     const observador = new ResizeObserver(ajustar);
     observador.observe(contenedor);
     window.addEventListener('resize', ajustar);
+    mediaEscritorio.addEventListener('change', ajustar);
     return () => {
       observador.disconnect();
       window.removeEventListener('resize', ajustar);
+      mediaEscritorio.removeEventListener('change', ajustar);
     };
   }, []);
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden wood-desk-background flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+    <div className="relative h-auto w-full overflow-visible wood-desk-background wood-desk-frame flex flex-col items-center justify-center p-2 sm:p-4 select-none lg:h-[100dvh] lg:overflow-hidden">
       {/* Halo de luz superior de la lámpara de escritorio */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] sm:w-[65%] h-[420px] bg-amber-200/15 blur-[130px] pointer-events-none rounded-full" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] sm:w-[65%] h-[260px] lg:h-[420px] bg-amber-200/15 blur-[130px] pointer-events-none rounded-full" />
 
       {/* Tablón de Corcho Central (Canvas de Composición) */}
       <Corkboard>
@@ -175,8 +185,10 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
 
           </div>
 
-          {/* Hilo rojo del muro de investigación conectando las pistas */}
-          <HiloInvestigacion contenedorRef={contenedorRef} rejillaRef={rejillaRef} nodos={nodosHilo} conexiones={CONEXIONES_HILO} />
+          {/* Hilo rojo del muro de investigación conectando las pistas (solo escritorio) */}
+          <div className="hidden lg:block">
+            <HiloInvestigacion contenedorRef={contenedorRef} rejillaRef={rejillaRef} nodos={nodosHilo} conexiones={CONEXIONES_HILO} />
+          </div>
 
         </div>
       </Corkboard>

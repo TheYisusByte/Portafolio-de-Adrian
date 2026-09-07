@@ -6,9 +6,9 @@ interface CorkboardProps {
 
 export const Corkboard: React.FC<CorkboardProps> = ({ children }) => {
   return (
-    <div className="relative w-full max-w-[1400px] h-full mx-auto overflow-hidden rounded-xl p-2 sm:p-4 shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-[12px] border-[#3b2210] bg-[#4a2a16]">
+    <div className="relative w-full max-w-[1400px] h-auto lg:h-full mx-auto overflow-hidden rounded-xl p-2 sm:p-4 shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-8 lg:border-[12px] border-[#3b2210] bg-[#4a2a16]">
       {/* Marco interior biselado */}
-      <div className="cork-capsula relative rounded-lg overflow-hidden cork-texture p-3 sm:p-6 xl:p-8 h-full min-h-0 flex flex-col justify-between border-4 border-amber-950/40">
+      <div className="cork-capsula relative rounded-lg overflow-hidden cork-texture p-3 sm:p-6 xl:p-8 h-auto lg:h-full min-h-0 flex flex-col justify-between border-4 border-amber-950/40">
         
         {/* Listón de cinta de enmascarar con el nombre ADRIAN */}
         <div className="absolute top-4 left-5 z-30 drop-shadow-[0_6px_10px_rgba(0,0,0,0.45)] select-none pointer-events-none">
@@ -20,7 +20,7 @@ export const Corkboard: React.FC<CorkboardProps> = ({ children }) => {
         </div>
 
         {/* Contenido del tablón */}
-        <div className="relative z-20 flex-1 min-h-0 flex flex-col justify-center my-2 gap-4 overflow-hidden">
+        <div className="relative z-20 flex flex-col my-2 gap-4 lg:flex-1 lg:min-h-0 lg:justify-center lg:overflow-hidden">
           {children}
         </div>
 

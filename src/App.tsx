@@ -27,7 +27,7 @@ export function App() {
   const cerrarModal = () => setModalActivo({ tipo: 'ninguno' });
 
   return (
-    <main className="relative h-[100dvh] w-full overflow-hidden">
+    <main className="relative h-auto w-full overflow-x-hidden lg:h-[100dvh] lg:overflow-hidden">
       <CanvasDesk onOpenModal={abrirModal} />
 
       {/* Renderizado de Modales de Papel Físico */}
