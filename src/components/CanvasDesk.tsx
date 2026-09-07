@@ -104,14 +104,14 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
           >
 
           {/* Columna 1: Identidad — Foto & Nota de pista */}
-          <div className="flex flex-col items-center w-full gap-8">
-            <div ref={refIdentidad} className="mt-12 sm:mt-16">
+          <div className="concatenar-movil flex flex-col items-center w-full gap-8">
+            <div ref={refIdentidad} className="orden-movil-1 mt-12 sm:mt-16">
               <DevPolaroid
                 onClick={() => onOpenModal('sobre-mi')}
                 rotation="-rotate-1"
               />
             </div>
-            <div ref={refInfo} className="mt-6 sm:mt-8">
+            <div ref={refInfo} className="orden-movil-2 mt-6 sm:mt-8">
               <PostItNote
                 color="amarillo"
                 titulo="Info"
@@ -123,8 +123,8 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
           </div>
 
           {/* Columna 2: Currículum & Proyecto 1 (Miel Orgánica) */}
-          <div className="flex flex-col gap-8 items-center w-full">
-            <div ref={refCurriculum}>
+          <div className="concatenar-movil flex flex-col gap-8 items-center w-full">
+            <div ref={refCurriculum} className="orden-movil-3">
               <PostItNote
                 color="rosa"
                 titulo="Currículum"
@@ -133,7 +133,7 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
                 rotation="rotate-2"
               />
             </div>
-            <div ref={refProyecto1}>
+            <div ref={refProyecto1} className="orden-movil-4">
               <ProjectClipping
                 titulo={proyectosData[0].titulo}
                 categoria="E-commerce & Landing"
@@ -145,8 +145,8 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
           </div>
 
           {/* Columna 3: Proyectos 2 (CRM) & 3 (Gastovoz) */}
-          <div className="flex flex-col gap-8 items-center w-full">
-            <div ref={refProyecto2}>
+          <div className="concatenar-movil flex flex-col gap-8 items-center w-full">
+            <div ref={refProyecto2} className="orden-movil-5">
               <PolaroidCard
                 imagen={proyectosData[1].imagen}
                 titulo={proyectosData[1].titulo}
@@ -155,7 +155,7 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
                 rotation="-rotate-2"
               />
             </div>
-            <div ref={refProyecto3}>
+            <div ref={refProyecto3} className="orden-movil-6">
               <ProjectClipping
                 titulo={proyectosData[2].titulo}
                 categoria="App Móvil / Flutter"
@@ -167,12 +167,12 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
           </div>
 
           {/* Columna 4: Contacto & Proyecto 4 (RuntimeHQ) */}
-          <div className="flex flex-col gap-8 items-center w-full">
-            <div ref={refMapa} className="flex flex-col items-center gap-4 w-full">
+          <div className="concatenar-movil flex flex-col gap-8 items-center w-full">
+            <div ref={refMapa} className="orden-movil-8 flex flex-col items-center gap-4 w-full">
               <MapaContacto onClick={() => onOpenModal('contacto')} />
               <DeskDecorations />
             </div>
-            <div ref={refProyecto4}>
+            <div ref={refProyecto4} className="orden-movil-7">
               <PolaroidCard
                 imagen={proyectosData[3].imagen}
                 titulo={proyectosData[3].titulo}

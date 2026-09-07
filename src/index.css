@@ -162,6 +162,23 @@
     padding-left: max(0.75rem, env(safe-area-inset-left));
     padding-right: max(0.75rem, env(safe-area-inset-right));
   }
+
+  /* Móvil: concatenar las columnas en una sola línea y ordenarlas como el hilo rojo */
+  .concatenar-movil {
+    display: contents;
+  }
+  .orden-movil-1 { order: 1; }
+  .orden-movil-2 { order: 2; }
+  .orden-movil-3 { order: 3; }
+  .orden-movil-4 { order: 4; }
+  .orden-movil-5 { order: 5; }
+  .orden-movil-6 { order: 6; }
+  .orden-movil-7 { order: 7; }
+  .orden-movil-8 { order: 8; }
+  .orden-movil-1,
+  .orden-movil-2 {
+    margin-top: 0 !important;
+  }
 }
 
 /* Scrollbar personalizado para modales */
