@@ -1,0 +1,8 @@
+node_modules
+dist
+.next
+.opencode/node_modules
+.env
+.env.local
+*.log
+.DS_Store

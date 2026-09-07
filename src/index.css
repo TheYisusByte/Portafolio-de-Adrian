@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-caveat {
+    font-family: 'Caveat', cursive;
+  }
+  .font-elite {
+    font-family: 'Special Elite', monospace;
+  }
+  .font-stencil {
+    font-family: 'Oswald', sans-serif;
+  }
+}
+
+/* Textura de corcho realista con CSS */
+.cork-texture {
+  background-color: #bfa074;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(139, 94, 60, 0.25) 0%, transparent 60%),
+    radial-gradient(circle at 20% 30%, rgba(80, 50, 30, 0.3) 2px, transparent 3px),
+    radial-gradient(circle at 80% 70%, rgba(80, 50, 30, 0.25) 1.5px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(60, 35, 20, 0.35) 2px, transparent 3px),
+    radial-gradient(circle at 90% 20%, rgba(110, 70, 40, 0.3) 2.5px, transparent 3.5px),
+    radial-gradient(circle at 10% 90%, rgba(90, 55, 30, 0.3) 2px, transparent 3px),
+    linear-gradient(135deg, rgba(160, 120, 90, 0.4) 0%, rgba(100, 65, 40, 0.5) 100%);
+  background-size: 100% 100%, 40px 40px, 60px 60px, 50px 50px, 70px 70px, 55px 55px, 100% 100%;
+  box-shadow: inset 0 0 50px rgba(40, 20, 10, 0.7);
+}
+
+/* Textura de escritorio de madera cálida (estilo TekaTek) */
+.wood-desk-background {
+  background-color: #2b180a;
+  background-image: 
+    radial-gradient(circle at 50% 40%, rgba(245, 170, 90, 0.3) 0%, rgba(15, 8, 3, 0.92) 85%),
+    linear-gradient(180deg, rgba(30, 15, 8, 0.9) 0%, rgba(55, 30, 15, 0.6) 50%, rgba(20, 10, 5, 0.95) 100%);
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.95);
+}
+
+/* Chinche de corcho realista */
+.push-pin {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #cc0000 60%, #800000 100%);
+  border-radius: 50%;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.6), inset 0 -2px 2px rgba(0,0,0,0.5);
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: none;
+}
+.push-pin::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 5px;
+  background: rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+/* Sombra de papel realista */
+.paper-shadow {
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.5), 0 6px 10px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Listón tipo cinta de enmascarar translúcida sobre el corcho */
+.cork-ribbon {
+  position: relative;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 1rem) 0,
+    100% 50%,
+    calc(100% - 1rem) 100%,
+    0 100%,
+    1rem 50%
+  );
+  background-color: rgba(255, 236, 189, 0.55);
+  background-image:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 35%, rgba(120, 80, 40, 0.14) 60%, rgba(120, 80, 40, 0.24) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(90, 60, 30, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  color: #3f2a14;
+  padding: 0.35rem 1.75rem 0.35rem 2rem;
+  white-space: nowrap;
+}
+
+/* Borde suave de la cinta */
+.cork-ribbon::before {
+  content: '';
+  position: absolute;
+  inset: 0.25rem;
+  border: 1px dashed rgba(90, 60, 30, 0.16);
+  pointer-events: none;
+}
+
+/* Bloc de notas: pila de hojas inferiores del post-it */
+.postit-stack::before,
+.postit-stack::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  right: -6px;
+  bottom: -9px;
+  height: 10px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.18));
+  z-index: -1;
+}
+.postit-stack::before {
+  transform: rotate(-1.6deg);
+}
+.postit-stack::after {
+  transform: rotate(1.1deg);
+  bottom: -5px;
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95) rotate(var(--tw-rotate, 0deg)); }
+  to { opacity: 1; transform: scale(1) rotate(var(--tw-rotate, 0deg)); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tendido del hilo rojo del muro de investigación */
+@keyframes tendido {
+  from { stroke-dashoffset: 1; opacity: 0.2; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.hilo-tendido path {
+  stroke-dasharray: 1;
+  animation: tendido 1.3s ease-out forwards;
+}
+
+/* Sin scroll en pantallas bajas: compactar rellenos y holguras del tablón */
+@media (max-height: 800px) and (min-width: 1024px) {
+  .cork-capsula {
+    padding: 0.75rem 1.5rem !important;
+  }
+  .cork-rejilla {
+    padding-block: 0.5rem !important;
+    gap: 1.5rem !important;
+  }
+  .cork-rejilla > div {
+    gap: 1.25rem !important;
+  }
+}
+
+/* Scrollbar personalizado para modales */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 80, 50, 0.4);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 80, 50, 0.7);
+}
