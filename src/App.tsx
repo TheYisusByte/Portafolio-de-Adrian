@@ -5,12 +5,13 @@ import { ProjectModal } from './components/modals/ProjectModal';
 import { ContactModal } from './components/modals/ContactModal';
 import { PressKitModal } from './components/modals/PressKitModal';
 import { NotaPersonalModal } from './components/modals/NotaPersonalModal';
+import { ArcheryModal } from './components/modals/ArcheryModal';
 import { ModalActivo } from './types';
 
 export function App() {
   const [modalActivo, setModalActivo] = useState<ModalActivo>({ tipo: 'ninguno' });
 
-  const abrirModal = (tipo: 'sobre-mi' | 'nota-sobre-mi' | 'proyecto' | 'contacto' | 'press-kit', idProyecto?: string) => {
+  const abrirModal = (tipo: 'sobre-mi' | 'nota-sobre-mi' | 'proyecto' | 'contacto' | 'press-kit' | 'arqueria', idProyecto?: string) => {
     if (tipo === 'proyecto' && idProyecto) {
       setModalActivo({ tipo: 'proyecto', idProyecto });
     } else if (tipo === 'sobre-mi') {
@@ -21,6 +22,8 @@ export function App() {
       setModalActivo({ tipo: 'contacto' });
     } else if (tipo === 'press-kit') {
       setModalActivo({ tipo: 'press-kit' });
+    } else if (tipo === 'arqueria') {
+      setModalActivo({ tipo: 'arqueria' });
     }
   };
 
@@ -36,6 +39,7 @@ export function App() {
       {modalActivo.tipo === 'proyecto' && <ProjectModal idProyecto={modalActivo.idProyecto} onClose={cerrarModal} />}
       {modalActivo.tipo === 'contacto' && <ContactModal onClose={cerrarModal} />}
       {modalActivo.tipo === 'press-kit' && <PressKitModal onClose={cerrarModal} />}
+      {modalActivo.tipo === 'arqueria' && <ArcheryModal onClose={cerrarModal} />}
     </main>
   );
 }

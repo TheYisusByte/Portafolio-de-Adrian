@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Corkboard } from './Corkboard';
 import { DevPolaroid } from './DevPolaroid';
 import { PostItNote } from './PostItNote';
+import { ArcheryNote } from './ArcheryNote';
 import { PolaroidCard } from './PolaroidCard';
 import { ProjectClipping } from './ProjectClipping';
 import { MapaContacto } from './MapaContacto';
@@ -10,7 +11,7 @@ import { HiloInvestigacion } from './HiloInvestigacion';
 import { proyectosData } from '../data/portfolioData';
 
 interface CanvasDeskProps {
-  onOpenModal: (tipo: 'sobre-mi' | 'nota-sobre-mi' | 'proyecto' | 'contacto' | 'press-kit', idProyecto?: string) => void;
+  onOpenModal: (tipo: 'sobre-mi' | 'nota-sobre-mi' | 'proyecto' | 'contacto' | 'press-kit' | 'arqueria', idProyecto?: string) => void;
 }
 
 const CONEXIONES_HILO: Array<[string, string]> = [
@@ -94,7 +95,15 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] sm:w-[65%] h-[260px] lg:h-[420px] bg-amber-200/15 blur-[130px] pointer-events-none rounded-full" />
 
       {/* Tablón de Corcho Central (Canvas de Composición) */}
-      <Corkboard>
+      <Corkboard notaInferiorIzquierda={
+        <div className="hidden lg:block">
+          <ArcheryNote
+            onClick={() => onOpenModal('arqueria')}
+            rotation="rotate-2"
+            compacto
+          />
+        </div>
+      }>
         {/* Distribución en zigzag: identidad → documentos → evidencia → contacto */}
         <div ref={contenedorRef} className="relative flex-1 min-h-0 w-full overflow-hidden">
           <div
@@ -124,7 +133,7 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
 
           {/* Columna 2: Currículum & Proyecto 1 (Miel Orgánica) */}
           <div className="concatenar-movil flex flex-col gap-8 items-center w-full">
-            <div ref={refCurriculum} className="orden-movil-3">
+            <div ref={refCurriculum} className="orden-movil-3 flex flex-col gap-6">
               <PostItNote
                 color="rosa"
                 titulo="Currículum"
@@ -132,6 +141,12 @@ export const CanvasDesk: React.FC<CanvasDeskProps> = ({ onOpenModal }) => {
                 onClick={() => onOpenModal('press-kit')}
                 rotation="rotate-2"
               />
+              <div className="lg:hidden">
+                <ArcheryNote
+                  onClick={() => onOpenModal('arqueria')}
+                  rotation="-rotate-2"
+                />
+              </div>
             </div>
             <div ref={refProyecto1} className="orden-movil-4">
               <ProjectClipping

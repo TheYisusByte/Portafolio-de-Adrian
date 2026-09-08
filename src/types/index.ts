@@ -42,4 +42,5 @@ export type ModalActivo =
   | { tipo: 'nota-sobre-mi' }
   | { tipo: 'proyecto'; idProyecto: string }
   | { tipo: 'contacto' }
-  | { tipo: 'press-kit' };
+  | { tipo: 'press-kit' }
+  | { tipo: 'arqueria' };

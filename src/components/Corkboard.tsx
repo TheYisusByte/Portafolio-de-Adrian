@@ -2,11 +2,12 @@ import React from 'react';
 
 interface CorkboardProps {
   children: React.ReactNode;
+  notaInferiorIzquierda?: React.ReactNode;
 }
 
-export const Corkboard: React.FC<CorkboardProps> = ({ children }) => {
+export const Corkboard: React.FC<CorkboardProps> = ({ children, notaInferiorIzquierda }) => {
   return (
-    <div className="relative w-full max-w-[1400px] h-auto lg:h-full mx-auto overflow-hidden rounded-xl p-2 sm:p-4 shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-8 lg:border-[12px] border-[#3b2210] bg-[#4a2a16]">
+    <div className="relative w-full max-w-[1400px] h-auto lg:h-full mx-auto overflow-hidden lg:overflow-visible rounded-xl p-2 sm:p-4 shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-8 lg:border-[12px] border-[#3b2210] bg-[#4a2a16]">
       {/* Marco interior biselado */}
       <div className="cork-capsula relative rounded-lg overflow-hidden cork-texture p-3 sm:p-6 xl:p-8 h-auto lg:h-full min-h-0 flex flex-col justify-between border-4 border-amber-950/40">
         
@@ -29,6 +30,13 @@ export const Corkboard: React.FC<CorkboardProps> = ({ children }) => {
           <span>© 2026 ADRIAN. Todos los derechos reservados.</span>
         </div>
       </div>
+
+      {/* Nota anclada abajo en la esquina inferior izquierda, sobresaliendo del marco */}
+      {notaInferiorIzquierda && (
+        <div className="absolute -bottom-3 -left-2 xl:-bottom-4 xl:-left-3 z-30">
+          {notaInferiorIzquierda}
+        </div>
+      )}
     </div>
   );
 };

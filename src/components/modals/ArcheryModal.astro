@@ -1,0 +1,458 @@
+---
+// src/components/modals/ArcheryModal.astro
+// Minijuego de Arquería Synthwave 16-Bits en Astro Puro + Tailwind CSS
+---
+
+<div id="archery-modal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/90 backdrop-blur-sm select-none">
+  <div class="relative w-full max-w-4xl bg-[#111827] border-4 border-amber-500 rounded-xl overflow-hidden shadow-[0_30px_90px_rgba(0,0,0,0.95)] flex flex-col">
+
+    <!-- Cabecera HUD -->
+    <div class="bg-stone-900 px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between border-b-2 border-amber-500/50">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <h2 class="font-mono text-sm sm:text-lg font-bold tracking-wider text-amber-100 uppercase">BONUS STAGE // SYNTHWAVE ASTRO</h2>
+      </div>
+      <div class="flex items-center gap-3 sm:gap-6 font-mono text-xs sm:text-sm">
+        <div class="flex items-center gap-1.5 bg-stone-800 px-2 sm:px-3 py-1 rounded border border-stone-700">
+          <span class="text-amber-400 font-bold">SCORE:</span>
+          <span id="hud-score" class="font-bold text-amber-300">0</span>
+        </div>
+        <span id="hud-arrows" class="text-stone-400">ARROWS: 5</span>
+        <button id="btn-close" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-600 text-white flex items-center justify-center hover:bg-red-700 cursor-pointer">✕</button>
+      </div>
+    </div>
+
+    {/* Viewport del Canvas */}
+    <div
+      id="game-viewport"
+      class="relative w-full aspect-[16/9] bg-black overflow-hidden cursor-crosshair flex items-center justify-center"
+    >
+      <canvas
+        id="archery-canvas"
+        width="320"
+        height="180"
+        class="w-full h-full object-contain"
+        style="image-rendering: pixelated; touch-action: none;"
+      ></canvas>
+
+      <!-- Filtro CRT Scanlines y Viñeta -->
+      <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.4)_50%)] bg-[length:100%_3px] opacity-70"></div>
+      <div class="absolute inset-0 pointer-events-none shadow-[inset_0_0_50px_rgba(0,0,0,0.85)]"></div>
+
+      <!-- Instrucción inicial -->
+      <div id="tutorial-msg" class="absolute top-4 left-1/2 -translate-x-1/2 bg-stone-900/90 border-2 border-cyan-400/80 px-4 py-1.5 rounded text-center pointer-events-none animate-pulse shadow-lg">
+        <span class="font-mono text-[11px] sm:text-xs text-cyan-300 font-bold tracking-widest uppercase">MANTÉN CLIC / ESPACIO Y SUELTA</span>
+      </div>
+
+      <!-- Mensaje de Resultado de Disparo -->
+      <div id="result-popup" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="bg-stone-950/95 border-2 border-pink-500 px-5 py-2.5 rounded-lg shadow-2xl text-center">
+          <span id="result-text" class="font-mono text-lg sm:text-xl font-extrabold uppercase text-pink-400 block tracking-wider">BULLSEYE!</span>
+          <span id="result-pts" class="font-mono text-xs text-cyan-200">+5 PTS</span>
+        </div>
+      </div>
+
+      <!-- Barra de Poder Neón -->
+      <div class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 h-44 sm:h-52 w-5 sm:w-6 bg-stone-950 border-2 border-cyan-500/80 rounded p-0.5 flex flex-col justify-end overflow-hidden pointer-events-none shadow-md">
+        <div class="absolute top-0 left-0 w-full h-[15%] bg-cyan-500/40 border-b border-dashed border-cyan-300 flex items-center justify-center">
+          <span class="font-mono text-[6px] text-cyan-200 font-bold tracking-tighter">SWEET</span>
+        </div>
+        <div id="power-bar" class="w-full bg-gradient-to-t from-purple-600 via-pink-500 to-cyan-300 rounded-xs" style="height: 0%"></div>
+      </div>
+
+      <!-- Pantalla Game Over / Stage Clear -->
+      <div id="game-over-screen" class="hidden absolute inset-0 bg-stone-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center">
+        <h3 class="font-mono text-2xl sm:text-3xl font-extrabold text-pink-300 uppercase tracking-wide mb-1">STAGE CLEAR</h3>
+        <p class="font-mono text-stone-300 text-sm sm:text-base mb-5">FINAL SCORE: <span id="final-score" class="text-cyan-400 font-bold text-xl">0</span> PTS</p>
+        <div class="flex gap-3">
+          <button id="btn-replay" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-stone-950 font-mono font-bold rounded-lg flex items-center gap-2 cursor-pointer shadow-lg">
+            PLAY AGAIN
+          </button>
+          <button id="btn-back" class="px-5 py-2.5 bg-stone-800 hover:bg-stone-700 text-white font-mono font-bold rounded-lg cursor-pointer">BACK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer HUD -->
+    <div class="bg-stone-900 px-4 py-2 border-t border-stone-800 flex justify-between items-center text-[10px] sm:text-xs text-stone-400 font-mono">
+      <span>Controls: Click / Touch / Spacebar</span>
+      <span>ASTRO SYNTHWAVE 16-BIT // 320×180</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // LÓGICA NATIVA EN TYPESCRIPT PURO PARA ASTRO
+  const canvas = document.getElementById('archery-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+
+  const scoreHud = document.getElementById('hud-score')!;
+  const arrowsHud = document.getElementById('hud-arrows')!;
+  const powerBar = document.getElementById('power-bar')!;
+  const tutorialMsg = document.getElementById('tutorial-msg')!;
+  const resultPopup = document.getElementById('result-popup')!;
+  const resultText = document.getElementById('result-text')!;
+  const resultPts = document.getElementById('result-pts')!;
+  const gameOverScreen = document.getElementById('game-over-screen')!;
+  const finalScore = document.getElementById('final-score')!;
+  const btnReplay = document.getElementById('btn-replay')!;
+  const btnBack = document.getElementById('btn-back')!;
+  const btnClose = document.getElementById('btn-close')!;
+  const viewport = document.getElementById('game-viewport')!;
+
+  const NW = 320;
+  const NH = 180;
+  const E = {
+    dianaX: 254, dianaY: 74,
+    arqueroX: 52, arqueroY: 138,
+    origenX: 62, origenY: 104,
+  };
+
+  let puntuacion = 0;
+  let disparos = 5;
+  let terminado = false;
+
+  let cargando = false;
+  let poder = 0;
+  let dir = 1;
+  let volando = false;
+  let t = 0;
+  let startX = 0;
+  let startY = 0;
+  let tx = 0;
+  let ty = 0;
+  let flash = 0;
+  let archerAnim = 'idle' as 'idle' | 'drawing' | 'shoot' | 'win' | 'miss';
+  let animTimer = 0;
+  let targetAngle = 0;
+  let targetVel = 0;
+
+  interface Particle {
+    x: number; y: number; vx: number; vy: number; color: string; size: number; life: number; maxLife: number; type: string;
+  }
+  interface FloatingText {
+    text: string; x: number; y: number; vy: number; alpha: number; color: string;
+  }
+  interface Impact {
+    localX: number; localY: number; pts: number;
+  }
+
+  let impactos: Impact[] = [];
+  let particles: Particle[] = [];
+  let floatingTexts: FloatingText[] = [];
+
+  // Controles
+  function handleStart() {
+    if (terminado || disparos <= 0 || volando) return;
+    cargando = true;
+    poder = 0;
+    dir = 1;
+    archerAnim = 'drawing';
+    resultPopup.classList.add('hidden');
+    if (disparos === 5) tutorialMsg.classList.add('hidden');
+  }
+
+  function handleEnd() {
+    if (!cargando || volando) return;
+    cargando = false;
+
+    let pts = 0;
+    let texto = 'MISS';
+    let animResult: 'win' | 'miss' = 'win';
+
+    if (poder >= 85) { pts = 5; texto = 'BULLSEYE!'; animResult = 'win'; }
+    else if (poder >= 60) { pts = 3; texto = '+3 PTS'; animResult = 'win'; }
+    else if (poder >= 30) { pts = 1; texto = '+1 PT'; animResult = 'win'; }
+    else { texto = 'MISS'; animResult = 'miss'; pts = 0; }
+
+    archerAnim = 'shoot';
+    setTimeout(() => { archerAnim = animResult; animTimer = 45; }, 150);
+
+    const error = Math.abs(poder - 92.5);
+    const offsetY = (error / 50) * 22 * (Math.random() > 0.5 ? 1 : -1);
+    const offsetX = (Math.random() - 0.5) * 8;
+
+    startX = E.origenX;
+    startY = E.origenY;
+    tx = E.dianaX + offsetX;
+    ty = E.dianaY + offsetY;
+    volando = true;
+    t = 0;
+    flash = 8;
+
+    for (let i = 0; i < 10; i++) {
+      particles.push({
+        x: E.origenX + 12, y: E.origenY,
+        vx: (Math.random() - 0.2) * 3.5, vy: (Math.random() - 0.5) * 3.5,
+        color: Math.random() > 0.5 ? '#06b6d4' : '#ec4899',
+        size: Math.random() > 0.5 ? 2 : 1,
+        life: 0, maxLife: 15, type: 'spark'
+      });
+    }
+
+    puntuacion += pts;
+    scoreHud.textContent = puntuacion.toString();
+    disparos--;
+    arrowsHud.textContent = `ARROWS: ${disparos}`;
+
+    resultText.textContent = texto;
+    resultPts.textContent = `+${pts} PTS`;
+    resultPopup.classList.remove('hidden');
+
+    if (disparos <= 0) {
+      setTimeout(() => {
+        terminado = true;
+        finalScore.textContent = puntuacion.toString();
+        gameOverScreen.classList.remove('hidden');
+      }, 1400);
+    }
+  }
+
+  viewport.addEventListener('pointerdown', handleStart);
+  viewport.addEventListener('pointerup', handleEnd);
+  viewport.addEventListener('pointerleave', handleEnd);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); handleStart(); }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); handleEnd(); }
+  });
+
+  btnClose.addEventListener('click', () => {
+    document.getElementById('archery-modal')?.remove();
+  });
+  btnBack.addEventListener('click', () => {
+    document.getElementById('archery-modal')?.remove();
+  });
+  btnReplay.addEventListener('click', () => {
+    puntuacion = 0; disparos = 5; terminado = false;
+    scoreHud.textContent = '0'; arrowsHud.textContent = 'ARROWS: 5';
+    powerBar.style.height = '0%';
+    gameOverScreen.classList.add('hidden');
+    resultPopup.classList.add('hidden');
+    volando = false; cargando = false; poder = 0; impactos = []; particles = []; floatingTexts = [];
+  });
+
+  // Bucle Principal 60 FPS
+  let frame = 0;
+  function gameLoop() {
+    frame++;
+
+    // 1. Cielo Synthwave
+    ctx.fillStyle = '#0f051d';
+    ctx.fillRect(0, 0, NW, NH);
+
+    const skyColors = ['#1e0b36', '#3b0764', '#6b21a8', '#9333ea', '#c026d3', '#db2777', '#f43f5e', '#fb923c', '#facc15'];
+    const bandH = Math.floor(128 / skyColors.length);
+    skyColors.forEach((col, i) => {
+      ctx.fillStyle = col;
+      ctx.fillRect(0, i * bandH, NW, bandH + 1);
+      if (i < skyColors.length - 1 && i % 2 === 0) {
+        ctx.fillStyle = skyColors[i + 1];
+        for (let x = (i % 4); x < NW; x += 4) {
+          ctx.fillRect(x, i * bandH + bandH - 1, 2, 1);
+        }
+      }
+    });
+
+    // 2. Sol Gigante Sliced
+    const sunX = 220, sunY = 70, sunR = 28;
+    ctx.fillStyle = '#f97316';
+    ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath(); ctx.arc(sunX, sunY, sunR - 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0f051d';
+    let sliceH = 1, sliceGap = 2;
+    for (let sy = sunY + 2; sy < sunY + sunR + 10; sy += sliceH + sliceGap) {
+      ctx.fillRect(sunX - sunR - 4, sy, sunR * 2 + 8, sliceH);
+      sliceH++;
+    }
+
+    // 3. Estrellas
+    ctx.fillStyle = '#ffffff';
+    const stars = [[15,12],[45,22],[75,8],[110,18],[145,10],[180,25],[260,12],[295,20],[30,35],[95,40],[270,30]];
+    stars.forEach(([sx, sy], idx) => {
+      if ((frame + idx * 13) % 50 < 25) ctx.fillRect(sx, sy, 1, 1);
+    });
+
+    // 4. Montañas
+    ctx.fillStyle = '#1e1b4b';
+    ctx.beginPath(); ctx.moveTo(0, 128);
+    ctx.lineTo(35, 96); ctx.lineTo(85, 118); ctx.lineTo(140, 88);
+    ctx.lineTo(200, 110); ctx.lineTo(260, 92); ctx.lineTo(NW, 112);
+    ctx.lineTo(NW, 132); ctx.lineTo(0, 132); ctx.fill();
+
+    ctx.fillStyle = '#3b0764';
+    ctx.beginPath(); ctx.moveTo(0, 130);
+    ctx.lineTo(50, 102); ctx.lineTo(110, 124); ctx.lineTo(170, 96);
+    ctx.lineTo(230, 116); ctx.lineTo(NW, 104);
+    ctx.lineTo(NW, 132); ctx.lineTo(0, 132); ctx.fill();
+
+    // 5. Suelo y Césped
+    ctx.fillStyle = '#090514';
+    ctx.fillRect(0, 130, NW, NH - 130);
+    ctx.fillStyle = '#111827';
+    ctx.fillRect(0, 130, NW, 4);
+
+    ctx.strokeStyle = 'rgba(236, 72, 153, 0.25)';
+    ctx.lineWidth = 1;
+    for (let lx = 0; lx < NW; lx += 24) {
+      ctx.beginPath(); ctx.moveTo(lx, 134); ctx.lineTo(lx - 40 + (lx * 0.4), NH); ctx.stroke();
+    }
+
+    const windOffset = Math.sin(frame * 0.1) * 1.5;
+    for (let gx = 2; gx < NW; gx += 6) {
+      const sway = (gx % 12 === 0) ? windOffset : -windOffset;
+      ctx.fillStyle = '#0891b2'; ctx.fillRect(gx, 126, 2, 6);
+      ctx.fillStyle = '#ec4899'; ctx.fillRect(gx + sway, 125, 1, 2);
+    }
+
+    // 6. Física Diana
+    if (Math.abs(targetAngle) > 0.001 || Math.abs(targetVel) > 0.001) {
+      const k = 0.18, damping = 0.82;
+      const force = -k * targetAngle;
+      targetVel = (targetVel + force) * damping;
+      targetAngle += targetVel;
+    } else {
+      targetAngle = 0;
+    }
+
+    // 7. Diana
+    ctx.save();
+    ctx.translate(E.dianaX, E.dianaY);
+    ctx.rotate(targetAngle);
+    ctx.fillStyle = '#292524'; ctx.fillRect(-6, 12, 12, 58);
+    ctx.fillStyle = '#1e1b4b'; ctx.fillRect(-22, -22, 44, 44);
+    ctx.fillStyle = '#312e81'; ctx.fillRect(-20, -20, 40, 40);
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(-16, -16, 32, 32);
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(-13, -13, 26, 26);
+    ctx.fillStyle = '#0284c7'; ctx.fillRect(-9, -9, 18, 18);
+    ctx.fillStyle = '#e11d48'; ctx.fillRect(-5, -5, 10, 10);
+    ctx.fillStyle = '#facc15'; ctx.fillRect(-2, -2, 4, 4);
+
+    impactos.forEach(imp => {
+      ctx.fillStyle = '#1c1917'; ctx.fillRect(imp.localX - 1, imp.localY - 1, 3, 3);
+      ctx.fillStyle = '#06b6d4'; ctx.fillRect(imp.localX + 2, imp.localY - 1, 4, 2);
+      ctx.fillStyle = '#ec4899'; ctx.fillRect(imp.localX - 3, imp.localY - 1, 2, 2);
+    });
+    ctx.restore();
+
+    // 8. Poder
+    if (cargando) {
+      poder += dir * 2.8;
+      if (poder >= 100) { poder = 100; dir = -1; }
+      if (poder <= 0) { poder = 0; dir = 1; }
+      powerBar.style.height = `${poder}%`;
+    }
+    if (flash > 0) flash--;
+
+    // 9. Arquero
+    const ax = E.arqueroX, ay = E.arqueroY;
+    const tension = cargando ? (poder / 100) * 16 : 0;
+    if (animState === 'win' || animState === 'miss') {
+      animTimer--;
+      if (animTimer <= 0) archerAnim = 'idle';
+    }
+
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(ax - 12, ay - 2, 28, 4);
+    ctx.fillStyle = '#030712'; ctx.fillRect(ax - 8, ay - 14, 8, 14); ctx.fillRect(ax + 2, ay - 14, 8, 14);
+
+    let torsoOffsetY = 0;
+    let headBob = Math.floor(Math.sin(frame * 0.1) * 0.8);
+    if (cargando) torsoOffsetY = 2;
+    if (animState === 'win') torsoOffsetY = -4;
+
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(ax - 10, ay - 36 + torsoOffsetY, 22, 24);
+    ctx.fillStyle = '#06b6d4'; ctx.fillRect(ax - 2, ay - 34 + torsoOffsetY, 2, 10);
+
+    const headY = ay - 48 + torsoOffsetY + headBob;
+    ctx.fillStyle = '#fed7aa'; ctx.fillRect(ax - 7, headY, 14, 14);
+    ctx.fillStyle = '#030712'; ctx.fillRect(ax - 8, headY - 3, 16, 5);
+    ctx.fillStyle = '#06b6d4'; ctx.fillRect(ax - 5, headY + 4, 11, 3);
+
+    const bowX = ax + 14 - tension * 0.5;
+    const bowY = E.origenY;
+    ctx.fillStyle = '#fed7aa'; ctx.fillRect(ax + 4 - tension, bowY - 3, 12, 6);
+
+    ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(bowX + 6, bowY, 22, -Math.PI * 0.45, Math.PI * 0.45); ctx.stroke();
+    ctx.fillStyle = '#e2e8f0'; ctx.fillRect(bowX + 5, bowY - 20, 3, 3); ctx.fillRect(bowX + 5, bowY + 18, 3, 3);
+
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bowX + 6 + Math.cos(-Math.PI * 0.45) * 22, bowY + Math.sin(-Math.PI * 0.45) * 22);
+    ctx.lineTo(bowX - tension, bowY);
+    ctx.lineTo(bowX + 6 + Math.cos(Math.PI * 0.45) * 22, bowY + Math.sin(Math.PI * 0.45) * 22);
+    ctx.stroke();
+
+    if (!cargando && !volando) {
+      ctx.fillStyle = '#78350f'; ctx.fillRect(ax - 8, bowY - 1, 24, 2);
+      ctx.fillStyle = '#06b6d4'; ctx.fillRect(ax + 12, bowY - 2, 4, 4);
+    }
+    if (flash > 0) {
+      ctx.fillStyle = flash % 2 === 0 ? '#06b6d4' : '#ec4899';
+      ctx.fillRect(bowX - 4, bowY - 10, 12, 20);
+    }
+
+    // 10. Flecha en vuelo
+    if (volando) {
+      t += 0.035;
+      if (t >= 1) {
+        volando = false; t = 1;
+        const dx = tx - E.dianaX, dy = ty - E.dianaY;
+        impactos.push({ localX: dx, localY: dy, pts: 5 });
+        targetVel = 0.28;
+
+        for (let i = 0; i < 12; i++) {
+          particles.push({
+            x: tx, y: ty, vx: (Math.random() - 0.5) * 4.5, vy: (Math.random() - 0.5) * 4.5 - 1,
+            color: Math.random() > 0.4 ? '#06b6d4' : '#ec4899', size: 2, life: 0, maxLife: 25, type: 'splinter'
+          });
+        }
+      }
+
+      const curX = startX + (tx - startX) * t;
+      const baseY = startY + (ty - startY) * t;
+      const curY = baseY + (-Math.sin(t * Math.PI) * 45);
+
+      const nextT = Math.min(1, t + 0.01);
+      const nextX = startX + (tx - startX) * nextT;
+      const nextBaseY = startY + (ty - startY) * nextT;
+      const nextY = nextBaseY + (-Math.sin(nextT * Math.PI) * 45);
+      const angle = Math.atan2(nextY - curY, nextX - curX);
+
+      ctx.save();
+      ctx.translate(curX, curY);
+      ctx.rotate(angle);
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.6)'; ctx.fillRect(-14, -1, 10, 2);
+      ctx.fillStyle = '#78350f'; ctx.fillRect(-10, -1, 14, 2);
+      ctx.fillStyle = '#ec4899'; ctx.fillRect(4, -2, 3, 4);
+      ctx.restore();
+    }
+
+    // 11. Partículas
+    particles.forEach((p, index) => {
+      p.x += p.vx; p.y += p.vy; p.life++;
+      if (p.type === 'splinter') p.vy += 0.15;
+      ctx.fillStyle = p.color; ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+      if (p.life >= p.maxLife) particles.splice(index, 1);
+    });
+
+    // 12. Textos flotantes
+    floatingTexts.forEach((ft, index) => {
+      ft.y += ft.vy; ft.alpha -= 0.02;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ft.alpha);
+      ctx.fillStyle = '#000000'; ctx.font = 'bold 10px sans-serif'; ctx.fillText(ft.text, ft.x - 14 + 1, ft.y + 1);
+      ctx.fillStyle = ft.color; ctx.fillText(ft.text, ft.x - 14, ft.y);
+      ctx.restore();
+      if (ft.alpha <= 0) floatingTexts.splice(index, 1);
+    });
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  requestAnimationFrame(gameLoop);
+</script>

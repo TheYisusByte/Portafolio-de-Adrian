@@ -181,6 +181,129 @@
   }
 }
 
+/* ============================================================
+   ESTILOS ARCADE — Bonus Stage (Neo-Geo 90s)
+   ============================================================ */
+
+/* Tipografía arcade pixelada */
+.font-arcade {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+}
+
+/* Panel con esquinas pixeladas (clip-path) */
+.arcade-panel {
+  background: linear-gradient(180deg, rgba(20, 24, 40, 0.92), rgba(10, 12, 24, 0.96));
+  clip-path: polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px));
+}
+
+/* Borde dorado pixelado con brillo */
+.arcade-border {
+  border: 1px solid #a16207;
+  box-shadow:
+    0 0 0 1px rgba(253, 224, 71, 0.25),
+    0 0 12px rgba(245, 158, 11, 0.18),
+    inset 0 0 14px rgba(0, 0, 0, 0.6);
+}
+
+/* Texto arcade con sombra dura pixelada */
+.pixel-text {
+  text-shadow: 1px 1px 0 #000, 2px 2px 0 #000;
+  letter-spacing: 0.08em;
+}
+
+/* Botón pixelado con paso al hover */
+.pixel-button {
+  position: relative;
+  clip-path: polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px));
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.pixel-button:hover {
+  transform: translateY(-1px) scale(1.03);
+  filter: brightness(1.1);
+}
+.pixel-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* Overlay CRT compuesto: scanlines + viñeta + separación RGB mínima */
+.crt-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(15, 15, 25, 0) 50%, rgba(0, 0, 10, 0.35) 50%);
+  background-size: 100% 3px;
+  animation: crt-parpadeo 4s steps(2) infinite;
+  pointer-events: none;
+}
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, rgba(20, 20, 40, 0) 55%, rgba(0, 0, 10, 0.55) 100%),
+    repeating-linear-gradient(0deg, rgba(255, 0, 80, 0.02) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(0, 160, 255, 0.02) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@keyframes crt-parpadeo {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 0.62; }
+}
+
+/* Barra de poder arcade */
+.power-bar {
+  background: linear-gradient(180deg, #fef08a, #f59e0b);
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+}
+
+/* Pop de puntuación (mensaje grande) */
+@keyframes score-pop {
+  0% { transform: scale(0.4) rotate(-3deg); opacity: 0; }
+  60% { transform: scale(1.12) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.score-pop {
+  animation: score-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Efecto de escala en combo activo */
+@keyframes combo-effect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.9)); }
+}
+.combo-effect {
+  animation: combo-effect 0.4s ease-in-out infinite;
+}
+
+/* Subida de texto flotante dentro del HUD */
+@keyframes subirTexto {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.subir-texto {
+  animation: subirTexto 0.25s ease-out forwards;
+}
+
+/* Sacudida del viewport del juego */
+@keyframes sacudida {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+}
+.sacudida {
+  animation: sacudida 0.18s linear;
+}
+
 /* Scrollbar personalizado para modales */
 ::-webkit-scrollbar {
   width: 8px;
