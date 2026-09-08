@@ -22,7 +22,7 @@ export const ArcheryNote: React.FC<ArcheryNoteProps> = ({
         <div className="flex items-center gap-1.5 mb-1">
           <Target className="w-3.5 h-3.5 text-amber-900 shrink-0" />
         </div>
-        <h3 className="font-caveat text-2xl sm:text-3xl font-bold leading-tight my-1">
+        <h3 className="font-caveat text-2xl sm:text-3xl font-bold leading-tight my-1 text-center underline underline-offset-4 decoration-amber-900/60">
           Bonus
         </h3>
       </div>
@@ -41,7 +41,7 @@ export const ArcheryNote: React.FC<ArcheryNoteProps> = ({
         <div className="flex items-center gap-1 mb-1">
           <Target className="w-3.5 h-3.5 text-amber-900" />
         </div>
-        <h3 className="font-caveat text-3xl sm:text-4xl font-bold leading-tight my-2">
+        <h3 className="font-caveat text-3xl sm:text-4xl font-bold leading-tight my-2 text-center underline underline-offset-4 decoration-amber-900/60">
           Bonus
         </h3>
       </div>
