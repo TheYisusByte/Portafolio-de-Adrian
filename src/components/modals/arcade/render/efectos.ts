@@ -1,7 +1,8 @@
 import { NH, NW } from '../constantes';
-import type { Motor, Particula, TextoFlotante } from '../types';
+import type { Particula, TextoFlotante } from '../types';
+import * as PIXI from 'pixi.js';
 
-export function actualizarYDibujarParticulas(ctx: CanvasRenderingContext2D, particulas: Particula[]) {
+export function actualizarYDibujarParticulas(g: PIXI.Graphics, particulas: Particula[]) {
   let vivas = 0;
   for (let i = 0; i < particulas.length; i++) {
     const p = particulas[i];
@@ -10,37 +11,27 @@ export function actualizarYDibujarParticulas(ctx: CanvasRenderingContext2D, part
     p.vida++;
     if (p.tipo === 'astilla' || p.tipo === 'ascua') p.vy += 0.1;
 
-    ctx.fillStyle = p.color;
-    ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.tam, p.tam);
+    const colorNum = typeof p.color === 'string' ? parseInt(p.color.replace('#', '0x')) : p.color;
+    g.rect(Math.floor(p.x), Math.floor(p.y), p.tam, p.tam).fill({ color: colorNum });
 
     if (p.vida < p.vidaMax) particulas[vivas++] = p;
   }
   particulas.length = vivas;
 }
 
-export function actualizarYDibujarTextos(ctx: CanvasRenderingContext2D, textos: TextoFlotante[]) {
+export function actualizarYDibujarTextos(_textosContainer: PIXI.Container, textos: TextoFlotante[]) {
   let vivas = 0;
   for (let i = 0; i < textos.length; i++) {
     const texto = textos[i];
     texto.y += texto.vy;
     texto.alpha -= 0.02;
-
-    ctx.save();
-    ctx.globalAlpha = Math.max(0, texto.alpha);
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 10px sans-serif';
-    ctx.fillText(texto.texto, texto.x - 14 + 1, texto.y + 1);
-    ctx.fillStyle = texto.color;
-    ctx.fillText(texto.texto, texto.x - 14, texto.y);
-    ctx.restore();
-
     if (texto.alpha > 0) textos[vivas++] = texto;
   }
   textos.length = vivas;
 }
 
-export function dibujarDestelloMundo(ctx: CanvasRenderingContext2D, flash: number) {
+export function dibujarDestelloMundo(g: PIXI.Graphics, flash: number) {
   if (flash <= 0) return;
-  ctx.fillStyle = `rgba(255, 220, 150, ${(flash / 8) * 0.12})`;
-  ctx.fillRect(0, 0, NW, NH);
+  const alpha = (flash / 8) * 0.12;
+  g.rect(0, 0, NW, NH).fill({ color: 0xffdc96, alpha });
 }

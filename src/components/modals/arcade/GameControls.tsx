@@ -7,7 +7,7 @@ export const GameControls: React.FC = () => {
         <span className="arcade-border px-2 py-0.5 rounded-sm text-amber-300 font-bold">SPACE</span>
         <span className="arcade-border px-2 py-0.5 rounded-sm text-amber-300 font-bold">CLICK</span>
         <span className="arcade-border px-2 py-0.5 rounded-sm text-amber-300 font-bold">TAP</span>
-        <span className="text-stone-500">— mantén para cargar, suelta para disparar</span>
+        <span className="text-stone-500">— hold to charge, release to fire</span>
       </span>
       <span className="text-amber-400/80 font-bold tracking-wider">NEO-GEO ARENA 16-BIT // 320×180</span>
     </div>

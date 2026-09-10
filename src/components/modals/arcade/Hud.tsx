@@ -53,18 +53,19 @@ export const Hud: React.FC<HudProps> = ({ puntuacion, mejorPuntuacion, comboCifr
         </p>
       </div>
 
-      {/* Indicador de flechas restantes */}
-      <div className="col-span-2 sm:col-span-4 flex items-center justify-center gap-4 pt-0.5 text-[10px] text-stone-400">
-        <span className="flex items-center gap-1">
+      {/* Indicador de flechas restantes (separado visualmente del medidor de potencia con iconos de flecha) */}
+      <div className="col-span-2 sm:col-span-4 flex items-center justify-between px-1 pt-0.5 text-[10px] text-stone-400">
+        <span className="flex items-center gap-1.5">
           <Crosshair className="w-3 h-3 text-amber-400" />
+          <span className="text-stone-300 font-bold uppercase tracking-wider">ARROWS:</span>
           {Array.from({ length: flechas }).map((_, indice) => (
-            <span key={indice} className="text-amber-300/80">{'▮'}</span>
+            <span key={indice} className="text-amber-400 text-xs transform -rotate-45 inline-block">▶</span>
           ))}
-          <span className="text-stone-600">{Array.from({ length: FLECHAS_POR_RONDA - flechas }).map((_, indice) => (
-            <span key={indice}>▯</span>
-          ))}</span>
+          {Array.from({ length: FLECHAS_POR_RONDA - flechas }).map((_, indice) => (
+            <span key={indice} className="text-stone-600 text-xs transform -rotate-45 inline-block">▷</span>
+          ))}
         </span>
-        <span className="hidden sm:inline text-stone-600">HOLD TO CHARGE · RELEASE TO FIRE</span>
+        <span className="text-stone-500 tracking-wider">HOLD TO CHARGE · RELEASE TO FIRE</span>
       </div>
     </div>
   );

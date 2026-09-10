@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react';
+import * as PIXI from 'pixi.js';
 import { COLOR_ZONA, E, NW, NH, VELOCIDAD_CARGA } from './constantes';
 import type { Motor, TextoFlotante } from './types';
 import { pintarFondo } from './render/fondo';
 import { avanzarAnimArquero, pintarArquero } from './render/arquero';
 import { actualizarFisicaDiana, pintarDiana } from './render/diana';
 import { pintarFlecha, registrarEstela } from './render/flecha';
-import { actualizarYDibujarParticulas, actualizarYDibujarTextos, dibujarDestelloMundo } from './render/efectos';
+import { actualizarYDibujarParticulas, dibujarDestelloMundo } from './render/efectos';
 
 interface EmisoresArcade {
   emitirAstillas: (x: number, y: number, cantidad?: number, centroDorado?: boolean) => void;
@@ -26,90 +27,136 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   poderBarRef,
   poderMeterRef,
 }) => {
-  const lienzoRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = lienzoRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.imageSmoothingEnabled = false;
+    let isMounted = true;
+    const container = containerRef.current;
+    if (!container) return;
 
-    let ejecutando = true;
-    let frame = 0;
+    let app: PIXI.Application | null = null;
 
-    const loop = () => {
-      if (!ejecutando) return;
-      frame++;
+    async function initPixi() {
+      try {
+        app = new PIXI.Application();
+        await app.init({
+          width: NW,
+          height: NH,
+          background: 0x070a14,
+          antialias: false,
+          powerPreference: 'high-performance',
+        });
 
-      const motor = motorRef.current;
-      const emisores = emisoresRef.current;
+        if (!isMounted || !container || !app || !app.canvas) {
+          app?.destroy(true, { children: true });
+          return;
+        }
 
-      // ----- ACTUALIZACIÓN DEL MOTOR (ref mutable, cero re-renders) -----
-      if (motor.flash > 0) motor.flash--;
-      if (motor.sacudida > 0) motor.sacudida--;
+        app.canvas.className = 'w-full h-full object-contain';
+        app.canvas.style.imageRendering = 'pixelated';
+        app.canvas.style.pointerEvents = 'none';
+        container.appendChild(app.canvas);
 
-      if (motor.fase === 'cargando') {
-        motor.poder += motor.dirPoder * VELOCIDAD_CARGA;
-        if (motor.poder >= 100) { motor.poder = 100; motor.dirPoder = -1; }
-        if (motor.poder <= 0) { motor.poder = 0; motor.dirPoder = 1; }
-        const altura = motor.poder + '%';
-        if (poderBarRef.current) poderBarRef.current.style.height = altura;
-        if (poderMeterRef.current) poderMeterRef.current.style.width = altura;
+        const gFondo = new PIXI.Graphics();
+        const gDiana = new PIXI.Graphics();
+        gDiana.x = E.dianaX;
+        gDiana.y = E.dianaY;
+
+        const gArquero = new PIXI.Graphics();
+        const gFlecha = new PIXI.Graphics();
+        const gParticulas = new PIXI.Graphics();
+        const gFlash = new PIXI.Graphics();
+
+        const worldContainer = new PIXI.Container();
+        worldContainer.addChild(gFondo);
+        worldContainer.addChild(gDiana);
+        worldContainer.addChild(gArquero);
+        worldContainer.addChild(gFlecha);
+        worldContainer.addChild(gParticulas);
+        worldContainer.addChild(gFlash);
+
+        app.stage.addChild(worldContainer);
+
+        let frame = 0;
+
+        app.ticker.add(() => {
+          if (!isMounted) return;
+          frame++;
+
+          const motor = motorRef.current;
+          const emisores = emisoresRef.current;
+
+          if (motor.flash > 0) motor.flash--;
+          if (motor.sacudida > 0) motor.sacudida--;
+
+          if (motor.fase === 'cargando') {
+            motor.poder += motor.dirPoder * VELOCIDAD_CARGA;
+            if (motor.poder >= 100) { motor.poder = 100; motor.dirPoder = -1; }
+            if (motor.poder <= 0) { motor.poder = 0; motor.dirPoder = 1; }
+            const altura = motor.poder + '%';
+            if (poderBarRef.current) poderBarRef.current.style.height = altura;
+            if (poderMeterRef.current) poderMeterRef.current.style.width = altura;
+          }
+
+          avanzarAnimArquero(motor);
+          actualizarFisicaDiana(motor);
+          registrarEstela(motor);
+
+          if (motor.volando) {
+            motor.progreso += 0.035;
+            if (motor.progreso >= 1) {
+              motor.volando = false;
+              motor.progreso = 1;
+              resolverImpacto(motor, emisores);
+            }
+          }
+
+          if (frame % 20 === 0) {
+            emisores.emitirAscuas(72, 30);
+            emisores.emitirAscuas(238, 30);
+          }
+
+          if (motor.sacudida > 0) {
+            worldContainer.x = (Math.random() - 0.5) * 4;
+            worldContainer.y = (Math.random() - 0.5) * 3;
+          } else {
+            worldContainer.x = 0;
+            worldContainer.y = 0;
+          }
+
+          gDiana.rotation = motor.anguloDiana;
+
+          pintarFondo(gFondo, motor, frame);
+          pintarDiana(gDiana, motor);
+          pintarArquero(gArquero, motor, frame);
+          pintarFlecha(gFlecha, motor);
+
+          gParticulas.clear();
+          actualizarYDibujarParticulas(gParticulas, motor.particulas);
+
+          gFlash.clear();
+          dibujarDestelloMundo(gFlash, motor.flash);
+        });
+      } catch (error) {
+        console.error('Error inicializando PixiJS:', error);
       }
+    }
 
-      avanzarAnimArquero(motor);
-      actualizarFisicaDiana(motor);
-      registrarEstela(motor);
+    initPixi();
 
-      // Avance de la flecha y resolución visual del impacto
-      if (motor.volando) {
-        motor.progreso += 0.035;
-        if (motor.progreso >= 1) {
-          motor.volando = false;
-          motor.progreso = 1;
-          resolverImpacto(motor, emisores);
+    return () => {
+      isMounted = false;
+      if (app) {
+        try {
+          app.destroy(true, { children: true });
+        } catch {
+          // ignore
         }
       }
-
-      // Ascuas ambientales de las antorchas (animación constante y sutil)
-      if (frame % 20 === 0) {
-        emisores.emitirAscuas(72, 30);
-        emisores.emitirAscuas(238, 30);
-      }
-
-      // ----- RENDERIZADO POR CAPAS -----
-      ctx.save();
-      if (motor.sacudida > 0) {
-        ctx.translate((Math.random() - 0.5) * 4, (Math.random() - 0.5) * 3);
-      }
-
-      pintarFondo(ctx, motor, frame);
-      pintarDiana(ctx, motor);
-      pintarArquero(ctx, motor, frame);
-      pintarFlecha(ctx, motor);
-      actualizarYDibujarParticulas(ctx, motor.particulas);
-      actualizarYDibujarTextos(ctx, motor.textos);
-      dibujarDestelloMundo(ctx, motor.flash);
-
-      ctx.restore();
-
-      requestAnimationFrame(loop);
     };
-
-    requestAnimationFrame(loop);
-    return () => { ejecutando = false; };
   }, [motorRef, emisoresRef, poderBarRef, poderMeterRef]);
 
-  return (
-    <canvas
-      ref={lienzoRef}
-      width={NW}
-      height={NH}
-      className="w-full h-full object-contain"
-      style={{ imageRendering: 'pixelated', touchAction: 'none' }}
-    />
-  );
+  return <div ref={containerRef} className="w-full h-full flex items-center justify-center overflow-hidden" />;
 };
 
 function resolverImpacto(motor: Motor, emisores: EmisoresArcade) {
@@ -118,7 +165,6 @@ function resolverImpacto(motor: Motor, emisores: EmisoresArcade) {
   const puntoY = motor.destinoY;
 
   if (zona === 'fallo') {
-    // El impacto se pierde en la pared: polvo y astillas, sin ruido de diana
     emisores.emitirAstillas(puntoX, puntoY, 8, false);
     return;
   }

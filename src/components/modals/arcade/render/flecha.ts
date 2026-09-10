@@ -1,4 +1,5 @@
 import type { Motor } from '../types';
+import * as PIXI from 'pixi.js';
 
 const ALTURA_PARABOLA = 42;
 const LARGO_ESTELA = 5;
@@ -28,41 +29,34 @@ export function registrarEstela(motor: Motor) {
   if (motor.estela.length > LARGO_ESTELA) motor.estela.shift();
 }
 
-export function pintarFlecha(ctx: CanvasRenderingContext2D, motor: Motor) {
-  if (!motor.volando) return;
+export function pintarFlecha(g: PIXI.Graphics, motor: Motor) {
+  g.clear();
+  if (!motor.volando) {
+    g.x = 0;
+    g.y = 0;
+    g.rotation = 0;
+    return;
+  }
 
-  // Estela pixelada que se desvanece
+  // Estela pixelada
   for (let i = 0; i < motor.estela.length; i++) {
     const punto = motor.estela[i];
     const opacidad = (i / motor.estela.length) * 0.35;
-    ctx.fillStyle = `rgba(250, 204, 21, ${opacidad.toFixed(2)})`;
-    ctx.fillRect(Math.floor(punto.x) - 1, Math.floor(punto.y) - 1, 3, 3);
+    g.rect(Math.floor(punto.x) - 1, Math.floor(punto.y) - 1, 3, 3).fill({ color: 0xfacc15, alpha: opacidad });
   }
 
   const posicion = calcularPosicionFlecha(motor);
-  ctx.save();
-  ctx.translate(posicion.x, posicion.y);
-  ctx.rotate(posicion.angulo);
+  g.x = posicion.x;
+  g.y = posicion.y;
+  g.rotation = posicion.angulo;
 
-  // Eje de madera
-  ctx.fillStyle = '#4a3210';
-  ctx.fillRect(-10, -1, 16, 2);
-  ctx.fillStyle = '#2f1f0b';
-  ctx.fillRect(-10, 0, 16, 1);
+  g.rect(-10, -1, 16, 2).fill({ color: 0x4a3210 });
+  g.rect(-10, 0, 16, 1).fill({ color: 0x2f1f0b });
 
-  // Punta de metal
-  ctx.fillStyle = '#e4e4e7';
-  ctx.fillRect(4, -2, 3, 2);
-  ctx.fillStyle = '#cbd5e1';
-  ctx.fillRect(4, 0, 3, 2);
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillRect(7, -1, 3, 1);
+  g.rect(4, -2, 3, 2).fill({ color: 0xe4e4e7 });
+  g.rect(4, 0, 3, 2).fill({ color: 0xcbd5e1 });
+  g.rect(7, -1, 3, 1).fill({ color: 0x94a3b8 });
 
-  // Plumas
-  ctx.fillStyle = '#0ea5e9';
-  ctx.fillRect(-11, -2, 4, 2);
-  ctx.fillStyle = '#e4e4e7';
-  ctx.fillRect(-11, 0, 4, 2);
-
-  ctx.restore();
+  g.rect(-11, -2, 4, 2).fill({ color: 0x0ea5e9 });
+  g.rect(-11, 0, 4, 2).fill({ color: 0xe4e4e7 });
 }

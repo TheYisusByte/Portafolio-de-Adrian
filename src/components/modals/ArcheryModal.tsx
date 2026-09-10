@@ -72,13 +72,7 @@ export const ArcheryModal: React.FC<ArcheryModalProps> = ({ onClose }) => {
             poderMeterRef={archery.poderMeterRef}
           />
 
-          {/* Barra de poder vertical (gauge de carga) */}
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 h-36 sm:h-44 w-3.5 bg-stone-950/80 backdrop-blur border border-amber-500/30 rounded-full p-0.5 flex flex-col justify-end overflow-hidden pointer-events-none shadow-lg">
-            <div className="absolute top-0 left-0 w-full h-[15%] bg-amber-500/30 border-b border-dashed border-amber-400 flex items-center justify-center">
-              <span className="font-mono text-[5px] text-amber-300 font-bold">TOP</span>
-            </div>
-            <div ref={archery.poderBarRef} className="power-bar w-full rounded-full" style={{ height: '0%' }} />
-          </div>
+          {/* Barra de poder vertical removida para evitar redundancia con el HUD y la barra TOP */}
 
           <Crtoverlay />
 
@@ -86,7 +80,7 @@ export const ArcheryModal: React.FC<ArcheryModalProps> = ({ onClose }) => {
 
           {archery.mostrarAyuda && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-stone-900/90 backdrop-blur border border-amber-500/40 px-4 py-2 rounded-2xl text-center pointer-events-none animate-bounce shadow-xl">
-              <span className="font-elite text-xs text-amber-200 font-bold tracking-wider uppercase">✨ Mantén clic / espacio / tap para tensar y suelta ✨</span>
+              <span className="font-elite text-xs text-amber-200 font-bold tracking-wider uppercase">✨ HOLD CLICK / SPACE / TAP TO CHARGE & RELEASE ✨</span>
             </div>
           )}
 
